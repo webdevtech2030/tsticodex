@@ -5,3 +5,4 @@ drf-spectacular>=0.28
 psycopg[binary]>=3.2
 django-cors-headers>=4.7
 jdatetime>=5.2
+gunicorn>=22.0

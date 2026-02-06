@@ -31,3 +31,9 @@
 
 - HTML templates use `jalali` template filter for rendering Jalali dates in server-rendered pages.
 - API remains ISO-8601 for mobile client interoperability.
+
+## Containerization
+
+- Production-ready multi-stage `Dockerfile` with non-root runtime user, slim image, and migration-aware entrypoint.
+- `docker-compose.yml` includes app + PostGIS database, healthchecks, persistent volumes, and env-driven secrets.
+- Copy `.env.example` to `.env` and update credentials before running in real environments.
