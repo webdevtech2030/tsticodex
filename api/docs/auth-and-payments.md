@@ -37,3 +37,16 @@
 - Production-ready multi-stage `Dockerfile` with non-root runtime user, slim image, and migration-aware entrypoint.
 - `docker-compose.yml` includes app + PostGIS database, healthchecks, persistent volumes, and env-driven secrets.
 - Copy `.env.example` to `.env` and update credentials before running in real environments.
+
+## UI/UX and frontend conventions
+
+- Root layout lives in `templates/base.html` and each app keeps its own local templates under `app/templates/app/`.
+- Bootstrap 5.3.8 (RTL build) is used for modern, responsive, mobile-first UI.
+- Any visible date in server-rendered templates should pass through `|jalali`.
+
+## API compatibility for React Native / Flutter
+
+- API remains JSON-first with JWT bearer auth.
+- Pagination is enabled for collection endpoints (`PAGE_SIZE=20`).
+- Throttling defaults are enabled to protect public/user APIs.
+- URLs remain versioned with `/api/v1/`.

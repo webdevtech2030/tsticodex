@@ -1,2 +1,16 @@
 {% extends 'base.html' %}
-{% block content %}<div class="glass p-4"><h2>Blogs</h2><p class="mb-0 text-secondary">Responsive blog UI placeholder.</p></div>{% endblock %}
+{% load jalali %}
+{% now "Y-m-d H:i:s" as now_dt %}
+{% block title %}وبلاگ{% endblock %}
+{% block content %}
+<section class="glass p-4 p-md-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 mb-0">وبلاگ و راهنمای سفر</h2>
+    <small class="text-secondary">{{ now_dt|jalali }}</small>
+  </div>
+  <div class="row g-3">
+    <div class="col-12 col-md-6"><article class="card border-0 shadow-sm h-100"><div class="card-body"><h3 class="h5">بهترین سفر به شمال</h3><p class="text-secondary">تجربه سفر آرام با رزرو هوشمند.</p></div></article></div>
+    <div class="col-12 col-md-6"><article class="card border-0 shadow-sm h-100"><div class="card-body"><h3 class="h5">راهنمای اقامت در کویر</h3><p class="text-secondary">نکات کاربردی برای سفر ایمن.</p></div></article></div>
+  </div>
+</section>
+{% endblock %}

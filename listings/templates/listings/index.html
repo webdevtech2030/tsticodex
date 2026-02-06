@@ -1,3 +1,17 @@
 {% extends 'base.html' %}
 {% load jalali %}
-{% block content %}<div class="glass p-4"><h2>Listings</h2><p class="mb-0 text-secondary">Modern responsive catalog UI placeholder.</p></div>{% endblock %}
+{% now "Y-m-d H:i:s" as current_dt %}
+{% block title %}اقامتگاه‌ها{% endblock %}
+{% block content %}
+<section class="glass p-4 p-md-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <h2 class="h3 mb-0">لیست اقامتگاه‌ها</h2>
+    <small class="text-secondary">به‌روزرسانی: {{ current_dt|jalali }}</small>
+  </div>
+  <div class="row g-3">
+    <div class="col-12 col-md-6 col-xl-4"><div class="card border-0 shadow-sm h-100"><div class="card-body"><h3 class="h5">ویلای جنگلی</h3><p class="text-secondary mb-2">رامسر</p><span class="badge text-bg-light">امتیاز 4.8</span></div></div></div>
+    <div class="col-12 col-md-6 col-xl-4"><div class="card border-0 shadow-sm h-100"><div class="card-body"><h3 class="h5">سوئیت شهری</h3><p class="text-secondary mb-2">تهران</p><span class="badge text-bg-light">امتیاز 4.6</span></div></div></div>
+    <div class="col-12 col-md-6 col-xl-4"><div class="card border-0 shadow-sm h-100"><div class="card-body"><h3 class="h5">اقامتگاه سنتی</h3><p class="text-secondary mb-2">یزد</p><span class="badge text-bg-light">امتیاز 4.9</span></div></div></div>
+  </div>
+</section>
+{% endblock %}

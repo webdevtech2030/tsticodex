@@ -1,3 +1,21 @@
 {% extends 'base.html' %}
 {% load jalali %}
-{% block content %}<div class="glass p-4"><h2>Bookings</h2><p class="mb-0">All booking dates in Jalali format with <code>|jalali</code> filter.</p></div>{% endblock %}
+{% now "Y-m-d" as today %}
+{% block title %}رزروها{% endblock %}
+{% block content %}
+<section class="glass p-4 p-md-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h3 mb-0">رزروهای من</h2>
+    <small class="text-secondary">امروز: {{ today|jalali }}</small>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>اقامتگاه</th><th>شروع</th><th>پایان</th><th>وضعیت</th></tr></thead>
+      <tbody>
+        <tr><td>ویلای جنگلی</td><td>{{ "2026-03-20"|jalali }}</td><td>{{ "2026-03-23"|jalali }}</td><td><span class="badge text-bg-warning">pending</span></td></tr>
+        <tr><td>سوئیت شهری</td><td>{{ "2026-04-12"|jalali }}</td><td>{{ "2026-04-14"|jalali }}</td><td><span class="badge text-bg-success">confirmed</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

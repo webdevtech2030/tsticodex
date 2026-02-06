@@ -1,16 +1,32 @@
 {% extends 'base.html' %}
-{% block title %}Phone Login{% endblock %}
+{% load jalali %}
+{% block title %}ورود با موبایل{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-12 col-md-7 col-lg-5">
-    <section class="glass p-4 shadow">
-      <h1 class="h4 mb-3">ورود/ثبت‌نام با شماره موبایل</h1>
-      <p class="text-secondary">برای API موبایل هم از همین مسیرها استفاده کنید.</p>
-      <form class="vstack gap-3">
-        <input class="form-control form-control-lg" placeholder="09xxxxxxxxx">
-        <button class="btn btn-primary btn-lg" type="button">ارسال کد تایید</button>
+<div class="row g-4 align-items-center">
+  <div class="col-12 col-lg-6">
+    <div class="glass soft-shadow p-4 p-md-5">
+      <span class="hero-chip d-inline-block mb-3">امن، سریع، موبایل‌محور</span>
+      <h1 class="display-6 fw-bold mb-3">ورود/ثبت‌نام با شماره موبایل</h1>
+      <p class="text-secondary mb-4">کد تأیید پیامکی دریافت کنید و بدون پسورد وارد شوید. این تجربه برای وب، React Native و Flutter یکسان و سازگار است.</p>
+      <form class="vstack gap-3" method="post" action="/api/v1/users/auth/send-code/">
+        <label class="form-label mb-0">شماره موبایل</label>
+        <input name="phone_number" class="form-control form-control-lg" placeholder="09xxxxxxxxx" inputmode="numeric" required>
+        <input type="hidden" name="purpose" value="login">
+        <button class="btn btn-primary btn-lg">ارسال کد تایید</button>
       </form>
-    </section>
+      <small class="text-secondary d-block mt-3">امروز: {{ now|jalali }}</small>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="glass p-4 p-md-5">
+      <h2 class="h4 mb-3">ویژگی‌ها</h2>
+      <div class="row g-3">
+        <div class="col-sm-6"><div class="p-3 bg-light rounded-4 h-100">JWT برای API موبایل</div></div>
+        <div class="col-sm-6"><div class="p-3 bg-light rounded-4 h-100">نسخه‌بندی `/api/v1/`</div></div>
+        <div class="col-sm-6"><div class="p-3 bg-light rounded-4 h-100">OTP یکبارمصرف + محدودیت تلاش</div></div>
+        <div class="col-sm-6"><div class="p-3 bg-light rounded-4 h-100">رندر تاریخ‌ها به جلالی در UI</div></div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

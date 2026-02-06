@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -50,4 +51,4 @@ class VerifyCodeView(APIView):
 
 
 def login_page(request):
-    return render(request, "users/login.html")
+    return render(request, "users/login.html", {"now": timezone.now()})
