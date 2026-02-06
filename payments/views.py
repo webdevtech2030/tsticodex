@@ -18,7 +18,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
         payment = PaymentService.create_payment(
             PaymentInput(
                 booking=serializer.validated_data["booking"],
-                amount=float(serializer.validated_data["amount"]),
+                amount=serializer.validated_data["amount"],
                 token=serializer.validated_data["token"],
             )
         )

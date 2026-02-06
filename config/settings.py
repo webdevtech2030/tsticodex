@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -76,7 +78,7 @@ if env("POSTGRES_DB"):
             "PASSWORD": env("POSTGRES_PASSWORD"),
             "HOST": env("POSTGRES_HOST", "localhost"),
             "PORT": env("POSTGRES_PORT", "5432"),
-            "CONN_MAX_AGE": env("POSTGRES_CONN_MAX_AGE", 60, int),
+            "CONN_MAX_AGE": env("POSTGRES_CONN_MAX_AGE", 120, int),
         }
     }
 else:
@@ -87,9 +89,15 @@ else:
         }
     }
 
-AUTH_PASSWORD_VALIDATORS = []
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Tehran"
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = "static/"
@@ -107,18 +115,34 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
 }
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Property Platform API",
-    "VERSION": "1.1.0",
+    "VERSION": "2.0.0",
 }
 
 PAYMENT_PROVIDER = env("PAYMENT_PROVIDER", "mock")
 PAYMENT_SUCCESS_CODE = env("PAYMENT_SUCCESS_CODE", "Success123")
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", "")
+
+CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS", "", list)
+CORS_ALLOW_CREDENTIALS = True
+
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE", not DEBUG, bool)
+CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE", not DEBUG, bool)
+CSRF_COOKIE_HTTPONLY = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS", 0 if DEBUG else 3600, int)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

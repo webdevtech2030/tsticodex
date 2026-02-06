@@ -1,25 +1,33 @@
-# API Additions (Phase 1 Hardening)
+# API Additions (Security + Phone Auth)
 
-## Authentication (SimpleJWT)
+## Phone-first authentication
 
-- `POST /api/v1/auth/token/` returns `access` and `refresh` JWT tokens.
-- `POST /api/v1/auth/token/refresh/` rotates and blacklists refresh tokens.
-- All `/api/v1/*` endpoints require bearer authentication by default.
+- `POST /api/v1/users/auth/send-code/`
+  - payload: `{ "phone_number": "09xxxxxxxxx", "purpose": "signup|login" }`
+  - sends verification code via SMS provider abstraction.
+- `POST /api/v1/users/auth/verify-code/`
+  - payload: `{ "phone_number": "09xxxxxxxxx", "purpose": "signup|login", "code": "123456", "username": "optional" }`
+  - verifies one-time code, marks phone verified, and returns JWT tokens + user payload.
 
-## Modernized security defaults
+## JWT security defaults
 
-- Refresh token rotation is enabled (`ROTATE_REFRESH_TOKENS=true`).
-- Old refresh tokens are blacklisted after rotation (`BLACKLIST_AFTER_ROTATION=true`).
-- `UPDATE_LAST_LOGIN=true` is enabled for better account activity tracking.
+- JWT required for `/api/v1/*` endpoints by default.
+- Refresh token rotation + blacklisting enabled.
+- Access token lifetime shortened to 15 minutes.
 
-## Payments Provider Toggle
+## Payment security and domain constraints
 
-`payments.ProviderFactory` chooses payment backend by `PAYMENT_PROVIDER`:
+- Only booking owner can pay.
+- Only `pending` bookings are payable.
+- Approved payment confirms booking status.
 
-- `mock` (default): accepts only token value equal to `PAYMENT_SUCCESS_CODE` (`Success123` default).
-- `stripe`: uses `StripeProvider` integration placeholder and requires `STRIPE_SECRET_KEY`.
+## Mobile compatibility notes (React Native / Flutter)
 
-## Booking Confirmation
+- Auth and resources are JSON-first DRF endpoints.
+- Versioned prefix (`/api/v1/`) maintained for backward-compatible evolution.
+- CORS settings are env-driven (`CORS_ALLOWED_ORIGINS`) for mobile/web client control.
 
-Successful payment (`approved=true`) automatically marks `booking.status="confirmed"`.
-Only `pending` bookings owned by the current user may be paid.
+## Jalali date in UI
+
+- HTML templates use `jalali` template filter for rendering Jalali dates in server-rendered pages.
+- API remains ISO-8601 for mobile client interoperability.

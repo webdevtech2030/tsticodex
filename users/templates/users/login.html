@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Phone Login{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-7 col-lg-5">
+    <section class="glass p-4 shadow">
+      <h1 class="h4 mb-3">ورود/ثبت‌نام با شماره موبایل</h1>
+      <p class="text-secondary">برای API موبایل هم از همین مسیرها استفاده کنید.</p>
+      <form class="vstack gap-3">
+        <input class="form-control form-control-lg" placeholder="09xxxxxxxxx">
+        <button class="btn btn-primary btn-lg" type="button">ارسال کد تایید</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}

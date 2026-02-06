@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from decimal import Decimal
 
 from django.db import transaction
 
@@ -10,7 +11,7 @@ from payments.providers import ProviderFactory
 @dataclass
 class PaymentInput:
     booking: Booking
-    amount: float
+    amount: Decimal
     token: str
 
 
@@ -19,7 +20,7 @@ class PaymentService:
     @transaction.atomic
     def create_payment(payload: PaymentInput) -> Payment:
         provider = ProviderFactory.build()
-        result = provider.charge(payload.amount, payload.token)
+        result = provider.charge(float(payload.amount), payload.token)
         payment = Payment.objects.create(
             booking=payload.booking,
             amount=payload.amount,
