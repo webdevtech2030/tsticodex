@@ -1,87 +1,136 @@
-# Property Platform API
+# Property Platform (Django + DRF)
 
-Django REST API for a property platform with users, listings, bookings, payments, and blogs.
+A modular monolith property booking platform built with Django/DRF, designed for:
 
-## Features
-- JWT authentication (`/api/v1/auth/token/`, `/api/v1/auth/token/refresh/`)
-- User profile endpoint (`/api/v1/users/me/`)
-- CRUD APIs for listings, bookings, payments, and blog posts
-- OpenAPI schema + Redoc docs
-- Pluggable payment provider (mock/stripe-ready contract)
+- **Web UI** (Django templates + Bootstrap RTL)
+- **Mobile clients** (React Native / Flutter) via versioned JSON APIs (`/api/v1/`)
 
-## Tech stack
-- Python + Django
+## Apps
+
+- `users` → phone-first auth + OTP verification
+- `listings` → property catalog
+- `bookings` → booking lifecycle (`pending`, `confirmed`, `cancelled`)
+- `payments` → provider-based charging + booking confirmation
+- `blogs` → content / engagement
+
+---
+
+## Tech Stack
+
+- Django 6.x
 - Django REST Framework
-- drf-spectacular
-- Simple JWT
+- SimpleJWT
+- drf-spectacular (OpenAPI schema/docs)
+- PostgreSQL / PostGIS (via Docker Compose)
+- Bootstrap 5.3 RTL (server-rendered templates)
 
-## Project structure
-- `config/` - settings, root URL config, WSGI/ASGI
-- `users/` - custom user model and profile endpoint
-- `listings/` - property listing API
-- `bookings/` - booking API
-- `payments/` - payment API and provider abstraction
-- `blogs/` - blog post API
+---
 
-## Setup
-1. Create and activate a virtualenv.
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run migrations:
-   ```bash
-   python manage.py migrate
-   ```
-4. Start development server:
-   ```bash
-   python manage.py runserver
-   ```
+## Quick Start for Developers
 
-## Environment variables
-- `DJANGO_SECRET_KEY` (default: `dev-only-secret`)
-- `DJANGO_DEBUG` (`true`/`false`, default: `true`)
-- `DJANGO_ALLOWED_HOSTS` (comma-separated, default: `*`)
+## 1) Clone and configure env
 
-### Database
-If `POSTGRES_DB` is set, PostgreSQL is used with:
-- `POSTGRES_DB`
-- `POSTGRES_USER`
-- `POSTGRES_PASSWORD`
-- `POSTGRES_HOST` (default: `localhost`)
-- `POSTGRES_PORT` (default: `5432`)
+```bash
+git clone <your-repo-url>
+cd tsticodex
+cp .env.example .env
+```
 
-Otherwise SQLite is used (`db.sqlite3`).
+Update values in `.env` (especially secrets and DB credentials).
 
-### Payments
-- `PAYMENT_PROVIDER` (default: `mock`)
-- `PAYMENT_SUCCESS_CODE` (default: `Success123`)
-- `STRIPE_SECRET_KEY` (optional)
+---
 
-## API docs
-- Schema: `GET /api/schema/`
-- Redoc UI: `GET /api/docs/`
+## 2) Run with Docker (recommended)
 
-## Main API routes
-All application routes are merged under `/api/v1/`:
-- `auth/token/`
-- `auth/token/refresh/`
-- `users/`
-- `listings/`
-- `bookings/`
-- `payments/`
-- `blogs/`
+### Build and start
 
-## Quick auth flow
-1. Create a user (via admin/shell/seed).
-2. Obtain token pair:
-   ```bash
-   curl -X POST http://127.0.0.1:8000/api/v1/auth/token/ \
-     -H 'Content-Type: application/json' \
-     -d '{"email":"user@example.com","password":"password"}'
-   ```
-3. Use `access` token:
-   ```bash
-   curl http://127.0.0.1:8000/api/v1/users/me/ \
-     -H 'Authorization: Bearer <access-token>'
-   ```
+```bash
+docker compose up --build
+```
+
+App will be available at:
+
+- `http://localhost:8000/`
+- API docs: `http://localhost:8000/api/docs/`
+- OpenAPI schema: `http://localhost:8000/api/schema/`
+
+### Stop services
+
+```bash
+docker compose down
+```
+
+### Stop and remove volumes (destructive)
+
+```bash
+docker compose down -v
+```
+
+---
+
+## 3) Run locally without Docker
+
+> Requires Python 3.12+ and PostgreSQL (or SQLite fallback if `POSTGRES_DB` is unset).
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+python manage.py migrate
+python manage.py runserver
+```
+
+---
+
+## Environment Variables
+
+See `.env.example` for defaults.
+
+Key variables:
+
+- `DJANGO_SECRET_KEY`
+- `DJANGO_DEBUG`
+- `DJANGO_ALLOWED_HOSTS`
+- `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`, `POSTGRES_PORT`
+- `PAYMENT_PROVIDER` (`mock` / `stripe`)
+- `PAYMENT_SUCCESS_CODE` (default dev bypass: `Success123`)
+- `STRIPE_SECRET_KEY`
+- `CORS_ALLOWED_ORIGINS`
+
+---
+
+## Auth Flow (Phone + OTP)
+
+1. Request code
+   - `POST /api/v1/users/auth/send-code/`
+2. Verify code and receive tokens
+   - `POST /api/v1/users/auth/verify-code/`
+3. Use JWT access token for protected endpoints
+   - `Authorization: Bearer <access_token>`
+
+---
+
+## Developer Checks
+
+```bash
+python -m py_compile $(rg --files -g '*.py')
+python manage.py check
+```
+
+---
+
+## Project Structure
+
+- `templates/base.html` → global layout
+- `*/templates/<app_name>/...` → app-local templates
+- `api/docs/` → internal docs
+- `docker-compose.yml`, `Dockerfile`, `docker/entrypoint.sh` → container runtime
+
+---
+
+## Notes
+
+- UI dates should be rendered in **Jalali** in templates.
+- API remains **JSON-first + versioned** for mobile compatibility.
+- For production, set `DJANGO_DEBUG=false` and secure all secrets.

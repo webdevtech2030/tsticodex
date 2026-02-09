@@ -1,18 +1,52 @@
-# API Additions (Phase 1 Hardening)
+# API Additions (Security + Phone Auth)
 
-## Authentication
+## Phone-first authentication
 
-- `POST /api/v1/auth/token/` returns `access` and `refresh` JWT tokens.
-- `POST /api/v1/auth/token/refresh/` rotates the access token.
-- All `/api/v1/*` endpoints now require bearer authentication by default.
+- `POST /api/v1/users/auth/send-code/`
+  - payload: `{ "phone_number": "09xxxxxxxxx", "purpose": "signup|login" }`
+  - sends verification code via SMS provider abstraction.
+- `POST /api/v1/users/auth/verify-code/`
+  - payload: `{ "phone_number": "09xxxxxxxxx", "purpose": "signup|login", "code": "123456", "username": "optional" }`
+  - verifies one-time code, marks phone verified, and returns JWT tokens + user payload.
 
-## Payments Provider Toggle
+## JWT security defaults
 
-`payments.ProviderFactory` chooses payment backend by `PAYMENT_PROVIDER`:
+- JWT required for `/api/v1/*` endpoints by default.
+- Refresh token rotation + blacklisting enabled.
+- Access token lifetime shortened to 15 minutes.
 
-- `mock` (default): accepts only token value equal to `PAYMENT_SUCCESS_CODE` (`Success123` default).
-- `stripe`: uses `StripeProvider` placeholder and requires `STRIPE_SECRET_KEY`.
+## Payment security and domain constraints
 
-## Booking Confirmation
+- Only booking owner can pay.
+- Only `pending` bookings are payable.
+- Approved payment confirms booking status.
 
-Successful payment (`approved=true`) automatically marks `booking.status="confirmed"`.
+## Mobile compatibility notes (React Native / Flutter)
+
+- Auth and resources are JSON-first DRF endpoints.
+- Versioned prefix (`/api/v1/`) maintained for backward-compatible evolution.
+- CORS settings are env-driven (`CORS_ALLOWED_ORIGINS`) for mobile/web client control.
+
+## Jalali date in UI
+
+- HTML templates use `jalali` template filter for rendering Jalali dates in server-rendered pages.
+- API remains ISO-8601 for mobile client interoperability.
+
+## Containerization
+
+- Production-ready multi-stage `Dockerfile` with non-root runtime user, slim image, and migration-aware entrypoint.
+- `docker-compose.yml` includes app + PostGIS database, healthchecks, persistent volumes, and env-driven secrets.
+- Copy `.env.example` to `.env` and update credentials before running in real environments.
+
+## UI/UX and frontend conventions
+
+- Root layout lives in `templates/base.html` and each app keeps its own local templates under `app/templates/app/`.
+- Bootstrap 5.3.8 (RTL build) is used for modern, responsive, mobile-first UI.
+- Any visible date in server-rendered templates should pass through `|jalali`.
+
+## API compatibility for React Native / Flutter
+
+- API remains JSON-first with JWT bearer auth.
+- Pagination is enabled for collection endpoints (`PAGE_SIZE=20`).
+- Throttling defaults are enabled to protect public/user APIs.
+- URLs remain versioned with `/api/v1/`.

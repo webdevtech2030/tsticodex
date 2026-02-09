@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -14,6 +15,23 @@ class Booking(models.Model):
     end_date = models.DateField()
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(end_date__gt=models.F("start_date")),
+                name="booking_end_date_after_start_date",
+            )
+        ]
+        indexes = [
+            models.Index(fields=["user", "status"]),
+            models.Index(fields=["listing", "start_date", "end_date"]),
+        ]
+
     def mark_confirmed(self) -> None:
-        self.status = self.Status.CONFIRMED
+        self.set_status(self.Status.CONFIRMED)
+
+    def set_status(self, target_status: str) -> None:
+        if self.status == self.Status.CANCELLED and target_status == self.Status.CONFIRMED:
+            raise ValidationError("Cancelled bookings cannot be confirmed.")
+        self.status = target_status
         self.save(update_fields=["status"])

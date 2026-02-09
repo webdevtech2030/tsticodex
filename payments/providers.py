@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from django.conf import settings
 
 
@@ -16,14 +17,16 @@ class BaseProvider:
 class MockProvider(BaseProvider):
     def charge(self, amount: float, token: str) -> PaymentResult:
         approved = token == settings.PAYMENT_SUCCESS_CODE
-        return PaymentResult(approved=approved, reference="mock-txn")
+        reference = f"mock-{int(amount * 100)}"
+        return PaymentResult(approved=approved, reference=reference)
 
 
 class StripeProvider(BaseProvider):
     def charge(self, amount: float, token: str) -> PaymentResult:
         if not settings.STRIPE_SECRET_KEY:
             raise ValueError("Missing STRIPE_SECRET_KEY")
-        return PaymentResult(approved=True, reference="stripe-placeholder")
+        # Placeholder for real Stripe SDK charge/create_payment_intent flow.
+        return PaymentResult(approved=True, reference=f"stripe-pi-{token[-8:]}")
 
 
 class ProviderFactory:
