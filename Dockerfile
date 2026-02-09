@@ -16,7 +16,7 @@ RUN groupadd --gid ${APP_GID} ${APP_USER} \
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
        libpq5 \
-       libgdal32 \
+       libgdal-dev \
        gdal-bin \
        gettext \
     && rm -rf /var/lib/apt/lists/*
