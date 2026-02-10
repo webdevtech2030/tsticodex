@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 
 from .serializers import SendCodeSerializer, UserSerializer, VerifyCodeSerializer
@@ -12,6 +13,7 @@ from .services import PhoneAuthService
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=UserSerializer)
     def get(self, request):
         return Response(UserSerializer(request.user).data)
 
@@ -19,6 +21,7 @@ class MeView(APIView):
 class SendCodeView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(request=SendCodeSerializer, responses={200: None})
     def post(self, request):
         serializer = SendCodeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -32,6 +35,7 @@ class SendCodeView(APIView):
 class VerifyCodeView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(request=VerifyCodeSerializer, responses={200: UserSerializer})
     def post(self, request):
         serializer = VerifyCodeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
