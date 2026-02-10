@@ -59,7 +59,12 @@ class VerificationCode(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        indexes = [models.Index(fields=["phone_number", "purpose", "expires_at"])]
+        indexes = [
+            models.Index(
+                fields=["phone_number", "purpose", "expires_at"],
+                name="users_verif_phone_n_703a5e_idx",
+            )
+        ]
 
     @classmethod
     def create_code(cls, phone_number: str, purpose: str) -> tuple["VerificationCode", str]:

@@ -23,8 +23,11 @@ class Booking(models.Model):
             )
         ]
         indexes = [
-            models.Index(fields=["user", "status"]),
-            models.Index(fields=["listing", "start_date", "end_date"]),
+            models.Index(fields=["user", "status"], name="bookings_bo_user_id_344f2d_idx"),
+            models.Index(
+                fields=["listing", "start_date", "end_date"],
+                name="bookings_bo_listing_0fd8af_idx",
+            ),
         ]
 
     def mark_confirmed(self) -> None:
