@@ -13,6 +13,13 @@ ARG APP_GID=10001
 RUN groupadd --gid ${APP_GID} ${APP_USER} \
     && useradd --uid ${APP_UID} --gid ${APP_GID} --create-home --shell /bin/bash ${APP_USER}
 
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources \
+    && printf '%s\n' \
+       'Acquire::Retries "5";' \
+       'Acquire::http::Timeout "30";' \
+       'Acquire::https::Timeout "30";' \
+       > /etc/apt/apt.conf.d/99network-retries
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
        libpq5 \
