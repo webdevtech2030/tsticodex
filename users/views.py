@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
@@ -32,12 +33,13 @@ class SendCodeView(APIView):
         return Response({"detail": "Verification code sent."}, status=status.HTTP_200_OK)
 
 
-class VerifyCodeView(APIView):
+class VerifyCodeView(GenericAPIView):
     permission_classes = [AllowAny]
+    serializer_class = VerifyCodeSerializer
 
     @extend_schema(request=VerifyCodeSerializer, responses={200: UserSerializer})
     def post(self, request):
-        serializer = VerifyCodeSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
             user, tokens = PhoneAuthService.verify_code(
